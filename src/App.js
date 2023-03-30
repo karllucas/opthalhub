@@ -1,23 +1,17 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
+import NavBar from './Components/NavBar';
+import Footer from './Components/Footer';
 import LoggedIn from './Components/LoggedIn';
 import LoggedOut from './Components/LoggedOut';
+import NotFound from './Components/NotFound';
 
 import { useAuth0 } from '@auth0/auth0-react';
 
 
 function App() {
 
-  // return (
-  //   <div className="App">
-  //     <NavBar />
-  //     <Jumbotron />
-  //     <DocList />
-  //     <CTA />
-  //     <Footer />
-  //     <LoginButton />
-  //   </div>
-  // );
   const { isLoading, isAuthenticated, error, user, loginWithRedirect, logout } =
     useAuth0();
 
@@ -30,10 +24,21 @@ function App() {
 
   if (isAuthenticated) {
     return (
-      <LoggedIn 
-        user={user}
-        logout={logout}
-      />
+      <>
+        <NavBar 
+              user={user} 
+              logout={logout}
+          />
+        <Routes>
+          <Route 
+            exact path="/" 
+            element={<LoggedIn user={user} logout={logout} />}
+          />
+          {/* <Route path="/booking" element={<Booking />} /> */}
+          <Route path="*" element={<NotFound /> }/>
+        </Routes>
+        <Footer />
+      </>
     );
   } else {
     return (

@@ -4,44 +4,9 @@ import {
 } from 'mdb-react-ui-kit';
 
 export default function Jumbotron() {
-//   const [showBasic, setShowBasic] = useState(false);
 
   return (
     <header>
-      {/* <MDBNavbar expand='lg' light bgColor='white'>
-        <MDBContainer fluid style={{ padding: '30px 15px' }}>
-          <MDBNavbarToggler
-            onClick={() => setShowBasic(!showBasic)}
-            aria-controls='navbarExample01'
-            aria-expanded='false'
-            aria-label='Toggle navigation'
-          >
-            <MDBIcon fas icon='bars' />
-          </MDBNavbarToggler>
-          <MDBCollapse navbar show={showBasic}>
-            <MDBNavbarNav 
-                right 
-                className='mb-2 mb-lg-0'
-            >
-              <MDBNavbarItem active>
-                <MDBNavbarLink aria-current='page' href='#'>
-                  Home
-                </MDBNavbarLink>
-              </MDBNavbarItem>
-              <MDBNavbarItem>
-                <MDBNavbarLink href='#'>Features</MDBNavbarLink>
-              </MDBNavbarItem>
-              <MDBNavbarItem>
-                <MDBNavbarLink href='#'>Pricing</MDBNavbarLink>
-              </MDBNavbarItem>
-              <MDBNavbarItem>
-                <MDBNavbarLink href='#'>About</MDBNavbarLink>
-              </MDBNavbarItem>
-            </MDBNavbarNav>
-          </MDBCollapse>
-        </MDBContainer>
-      </MDBNavbar> */}
-
       <div
         className='p-5 text-center bg-image'
         style={{ backgroundImage: "url('https://mdbootstrap.com/img/new/slides/041.webp')", height: '400px' }}

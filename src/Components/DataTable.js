@@ -6,16 +6,21 @@ function DataTable() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/opthalmologists', { cache: "no-store" })
+    fetch('http://localhost:3001/api/specialists', { cache: "no-store" })
       .then(response => response.text()) // convert the response to a string
       .then(data => JSON.parse(data)) // parse the string data as JSON
       .then(data => setData(data))
       .catch(error => console.log(error))
-  }, []);
-   // pass an empty array as a second argument to useEffect()
+  }, []); // pass an empty array as a second argument to useEffect()
 
   return (
-    <Table striped>
+    <Table 
+      striped
+      style={{
+        margin: '50px',
+        border: '1px solid #cecece'
+      }}
+    >
       <thead>
         <tr>
           <th>Name</th>
