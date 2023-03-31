@@ -5,17 +5,7 @@ export default function Booking(props) {
   const { selectedOpthal, user } = props;
   const [hasSessionScheduled, setHasSessionScheduled] = useState(false);
   const [isScheduled, setIsScheduled] = useState(false);
-
-  console.log(isScheduled);
-
-  useEffect(() => {
-    if (isScheduled) {
-      setHasSessionScheduled(true);
-    } else {
-      setHasSessionScheduled(false);
-    }
-  }, [isScheduled]);
-    
+  const [showCancelSessionButton, setShowCancelSessionButton] = useState(false);
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -27,6 +17,7 @@ export default function Booking(props) {
           setIsScheduled(true, () => {
             setHasSessionScheduled(true);
           });
+          setShowCancelSessionButton(true);
         } else {
           setIsScheduled(false);
         }
@@ -38,6 +29,23 @@ export default function Booking(props) {
     fetchSessions();
   }, [user.email]);
 
+  const handleCancelSession = async () => {
+    try {
+      const response = await fetch(`http://localhost:3004/api/patients/${user.email}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      console.log(data);
+      setIsScheduled(false);
+      setHasSessionScheduled(false);
+      setShowCancelSessionButton(false);
+      // handle any success or error messages accordingly
+    } catch (error) {
+      console.error(error);
+      // handle any error messages accordingly
+    }
+  };
+
   const handleScheduleSession = async () => {
     if (hasSessionScheduled) {
       return;
@@ -46,10 +54,10 @@ export default function Booking(props) {
       const checkResponse = await fetch(`http://localhost:3003/api/patients?patient_email=${user.email}`);
       const checkData = await checkResponse.json();
       if (checkData.length > 0 && checkData[0].session_status === 'Scheduled') {
-        console.log(isScheduled);
         return; // Exit the function if session is already scheduled
       }
-      if (!isScheduled) {
+      if (checkData.length === 0) {
+        // User's email does not exist in the database, so we proceed with scheduling the session without sending an error message
         const response = await fetch('http://localhost:3002/api/patients', {
           method: 'POST',
           headers: {
@@ -68,13 +76,36 @@ export default function Booking(props) {
         console.log(data);
         setIsScheduled(true);
         setHasSessionScheduled(true); // set the state here
-        // handle any success or error messages accordingly
+        setShowCancelSessionButton(true);
+        // handle any success messages accordingly
+      } else if (!isScheduled) {
+        // User's email exists in the database, but session is not yet scheduled
+        const response = await fetch('http://localhost:3002/api/patients', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            opthal_name: selectedOpthal.name,
+            charge_per_hour: selectedOpthal.charge_per_hour,
+            hospital: selectedOpthal.hospital,
+            patient_name: user.name,
+            patient_email: user.email,
+            session_status: 'Scheduled', // or any other default value preferred
+          }),
+        });
+        const data = await response.json();
+        console.log(data);
+        setIsScheduled(true);
+        setHasSessionScheduled(true); // set the state here
+        setShowCancelSessionButton(true);
+        // handle any success messages accordingly
       }
     } catch (error) {
       console.error(error);
       // handle any error messages accordingly
     }
-  };  
+  };    
 
   return (
     <div
@@ -97,9 +128,20 @@ export default function Booking(props) {
           <p><strong>Email:</strong> {user.email}</p>
 
           {hasSessionScheduled ? (
-            <p style={{ color: 'red', fontWeight: 'bold' }}>
-              You already have a session scheduled. Cancel first to reschedule another one.
-            </p>
+            <>
+            <p style={{ color: '#b20000', marginBottom: '-5px' }}>You already have a session booked.<br /> 
+              Cancel below to schedule another.</p>
+            <MDBBtn 
+              className='me-1' 
+              color='danger'
+              style={{
+                marginTop: '15px'
+              }}
+              onClick={handleCancelSession}
+            >
+              Cancel Session
+            </MDBBtn>
+            </>
           ) : (
             <MDBBtn 
               className='me-1' 
@@ -112,6 +154,7 @@ export default function Booking(props) {
               Schedule Session
             </MDBBtn>
           )}
+
         </div>
       )}
     </div>
